@@ -106,3 +106,47 @@ docker container run -it --volumes-from=python-server debian cat /log/http-serve
 docker image tag ex-simple-build USER-DOCKER/simple-build:1.0
 docker login --username=USER-DOCKER
 docker image push USER-DOCKER/simple-build:1.0
+
+-- Tipos de rede
+docker network ls
+
+docker container run --rm alpine ash -c "ifconfig"
+
+// None Network (Container isolado)
+docker container run -d --net none debian
+docker container run --rm --net none alpine ash -c "ifconfig"
+
+// Tipo Bridge (Modo padrão)
+docker network inspect bridge
+
+docker container run -d --name container1 alpine sleep 1000
+winpty docker container exec -it container1 ifconfig
+
+docker container run -d --name container2 alpine sleep 1000
+winpty docker container exec -it container2 ifconfig
+
+winpty docker container exec -it container1 ping 172.17.0.3
+winpty docker container exec -t container1 ping www.google.com.br
+
+docker network create --driver bridge rede_nova
+docker network ls
+docker network inspect rede_nova
+
+docker container run -d --name container3 --net rede_nova alpine sleep 1000
+winpty docker container exec -t container3 ifconfig
+
+docker container inspect container1
+winpty docker container exec -t container3 ping 172.17.0.2
+
+// O container3 terá acesso tanto a rede bridge quanto a rede_nova
+docker network connect bridge container3
+winpty docker container exec -it container3 ifconfig
+winpty docker container exec -it container3 ping 172.17.0.2
+
+docker network disconnect bridge container3
+
+winpty docker container exec -it container3 ifconfig
+
+// Tipo Host
+docker container run -d --name container4 --net host alpine sleep 1000
+winpty docker container exec container4 ifconfig
