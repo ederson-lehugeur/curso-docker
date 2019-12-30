@@ -1,0 +1,108 @@
+Comandos
+
+-- Criar containers
+docker container run hello-world
+docker container run debian bash --version
+
+-- Verificar dockers em execução
+docker container ps
+docker container ps -a
+
+-- Não mostrar na lista de execução
+docker container run --rm debian
+docker container run -it debian bash
+winpty docker container run -it debian bash (No bash do Windows 10)
+
+-- Nomear container
+winpty docker container run --name mydeb -it debian bash
+
+-- Reutilizar container
+docker container ls -a
+docker container start -ai mydeb
+
+-- Mapear portas
+// Dentro do container o web server nginx executará na porta 80 e no
+// na porta 8080.
+docker container run -p 8080:80 nginx
+
+-- Start/Stop/Restart um container em execução
+docker [container] stop NAME|CONTAINER_ID
+docker [container] start NAME|CONTAINER_ID
+docker [container] restart NAME|CONTAINER_ID
+
+-- Mapear volume
+docker container run -p 8080:80 -v $(pwd)/not-found:/usr/share/nginx/html nginx
+docker container run -p 8080:80 -v $(pwd)/html:/usr/share/nginx/html nginx
+docker container run -p 8080:80 -v /${pwd}/html:/usr/share/nginx/html nginx (Windows)
+docker container run -p 8080:80 -v //c/Users/ederl/docker/curso-docker/ex-volume/html:/usr/share/nginx/html nginx (Windows)
+
+-- Execução em background
+docker container run -d --name ex-daemon-basic -p 8080:80 -v /${pwd}/html:/usr/share/nginx/html nginx
+
+-- Manipulação em modo daemon
+docker container ps [-a]
+docker container ls [-a]
+docker container list [-a]
+docker container logs ex-daemon-basic
+docker container inspect ex-daemon-basic
+docker container exec ex-daemon-basic uname -orc
+
+-- Nova sintaxe docker client
+docker container ls
+docker image ls
+docker volume ls
+
+-- Docker help
+docker container --help
+docker image --help
+docker volume --help
+
+-- Baixar imagem
+docker image pull redis:latest
+
+docker image inspect redis:latest
+docker image tag redis:latest cod3r-redis
+docker image rm redis:latest cod3r-redis
+
+-- Comandos básicos no gerenciamento de imagens
+// Baixa uma imagem do docker hub
+docker image pull
+// Lista as imagens
+docker image ls
+// Remove uma imagem
+docker image rm TAG|HASH
+// Mostra um documento JSON com informações da imagem
+docker image inspect
+// Aplica uma tag a uma imagem
+docker image tag
+// Gera uma imagem a partir de um arquivo descritor
+docker image build
+// Publica no Docker Hub ou Docker Registry
+docker image push
+
+-- Executando build
+docker image build -t ex-simple-build .
+docker container run -p 80:80 ex-simple-build
+
+-- Dockerfile com passagens de argumentos
+docker image build -t ex-build-arg .
+docker container run ex-build-arg bash -c 'echo ${S3_BUCKET}'
+
+docker image build --build-arg S3_BUCKET=myapp -t ex-build-arg .
+docker container run ex-build-arg bash -c 'echo ${S3_BUCKET}'
+
+docker image inspect --format="{{index .Config.Labels \"maintainer\"}}" ex-build-arg
+
+-- Dockerfile com copy
+docker image build -t ex-build-copy .
+docker container run -p 80:80 ex-build-copy
+
+-- Execução de container com servidor python
+docker image build -t ex-build-dev .
+winpty docker container run -it -v //c/Users/ederl/docker/curso-docker/build-dev://app -p 80:8000 --name python-server ex-build-dev
+docker container run -it --volumes-from=python-server debian cat /log/http-server.log
+
+-- Push de imagem
+docker image tag ex-simple-build USER-DOCKER/simple-build:1.0
+docker login --username=USER-DOCKER
+docker image push USER-DOCKER/simple-build:1.0
