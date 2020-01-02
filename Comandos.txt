@@ -153,3 +153,9 @@ winpty docker container exec container4 ifconfig
 
 // Compose
 docker-compose up
+
+// Projeto email-worker-compose
+docker-compose up -d
+docker-compose ps
+docker-compose exec db psql -U postgres -c '\l'
+docker-compose down
