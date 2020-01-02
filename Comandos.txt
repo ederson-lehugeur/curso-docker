@@ -150,3 +150,6 @@ winpty docker container exec -it container3 ifconfig
 // Tipo Host
 docker container run -d --name container4 --net host alpine sleep 1000
 winpty docker container exec container4 ifconfig
+
+// Compose
+docker-compose up
