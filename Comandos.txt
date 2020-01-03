@@ -171,3 +171,7 @@ docker-compose up -d
 docker-compose logs -f -t
 
 docker-compose exec db psql -U postgres -d email_sender -c 'select * from email'
+
+// Escalar services
+docker-compose up -d --scale worker=3
+docker-compose logs -f -t worker
