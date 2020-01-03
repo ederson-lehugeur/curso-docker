@@ -167,6 +167,5 @@ docker-compose ps
 //winpty docker-compose exec db psql -U postgres -f scripts/init.sql
 winpty docker-compose exec db psql -U postgres -f scripts/check.sql
 
-// Front-end/App
 docker-compose up -d
 docker-compose logs -f -t
